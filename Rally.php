@@ -94,7 +94,7 @@ class Rally {
     $this->_setopt(CURLOPT_VERBOSE, $this->_debug);
     $this->_setopt(CURLOPT_USERAGENT, $this->_agent);
     $this->_setopt(CURLOPT_HEADER, 0);
-    $this->_setopt(CURLOPT_COOKIEFILE);
+    $this->_setopt(CURLOPT_COOKIEFILE, 1);
     // Authentication
     $this->_setopt(CURLOPT_USERPWD, "$username:$password");
     $this->_setopt(CURLOPT_HTTPAUTH, CURLAUTH_ANY);
@@ -229,6 +229,19 @@ class Rally {
   }
 
   /**
+   * Get a Rally object given raw url
+   *
+   * @param string $url
+   *   Rally URL
+   * @return array
+   *   Rally API response
+   */
+  public function get_raw($url) {
+    $ref = $this->_getPath($url);
+    return $this->_get($this->_addWorkspace($ref));
+  }
+
+ /**
    * Create a Rally object
    *
    * @param string $object
@@ -279,6 +292,17 @@ class Rally {
     // There are no values that return here
     $this->_delete($this->getRef($url, $id));
     return true;
+  }
+
+  /**
+   * @param $url
+   * @return array $path
+   *   Rally path
+   */
+  protected function _getPath($url) {
+    $url_parsed = parse_url($url);
+    $path = str_replace("/slm/webservice/{$this->_version}/","",$url_parsed['path']);
+    return $path;
   }
 
   /**
